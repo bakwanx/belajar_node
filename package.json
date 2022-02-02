@@ -1,0 +1,16 @@
+{
+  "name": "challenge-7",
+  "version": "1.0.0",
+  "description": "challenge 7",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon httpServer.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "farhan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15"
+  }
+}
