@@ -1,60 +1,148 @@
+const { response } = require('express');
 const ProductModel = require('../../models/mongodb/product/product');
+const JWT = require('jsonwebtoken');
+const JWTModule = require('../../module/JWTCheck');
 
-exports.All = (req, res) => {
-    ProductModel.find().then(response => {
-        console.log('berhasil');
-        res.send({
-            message: 'Successfull to get data',
-            statusCode: 200,
-            results: response
-        })
-    }).catch( err => {
-        console.log(err);
-        res.send({
-            message: 'Failed to get data',
-            statusCode: 500,
-        })
-    })
-}
+exports.All = async (req, res) => {
+    
+    // cara1 verify pake token
+    // let TokenAuth = req.headers.authorization.split(' ')[1];
+    // let resultToken = await JWT.verify(TokenAuth, "myTotalySecretKey", function(err, resultToken){
+    //     if(err)return false;
+    //     if(resultToken) return resultToken
+    // });
 
-exports.Create = (req, res) => {
-    // Validasi request
-    if(!req.body.title) {
-        return res.status(400).send({
-            message: "Konten product tidak boleh kosong!!!!"
-        });
+    // cara2 verify pake token
+    let resultToken = await JWTModule.JWTVerify(req.headers);
+    if(!resultToken){
+        res.send(403);
+    }else{
+        // cara get data 1
+        const getData = await ProductModel.find();
+        res.send(getData);
     }
 
-    // Create Product
-    const product = new ProductModel({
-        title: req.body.title || "Untitled Product", 
-        description: req.body.description,
-        price: req.body.price
+    // cara get data 2
+    // ProductModel.find().then(response => {
+    //     console.log('berhasil');
+    //     res.send({
+    //         message: 'Successfull to get data',
+    //         statusCode: 200,
+    //         results: response
+    //     })
+    // }).catch( err => {
+    //     console.log(err);
+    //     res.send({
+    //         message: 'Failed to get data',
+    //         statusCode: 500,
+    //     })
+    // })
+
+  
+}
+
+exports.Create = async (req, res) => {
+    let TokenAuth = req.headers.authorization.split(' ');
+    
+    let resultToken = await JWT.verify(TokenAuth[1], "myTotalySecretKey", function(err, resultToken){
+        if(err)return false;
+        if(resultToken) return resultToken
     });
 
-    // Simpan product
-    product.save()
-    .then(data => {
-        res.send(data);
-    }).catch(err => {
-        res.status(500).send({
-            message: err.message
+    if(!resultToken){
+        res.send(403);
+    }else{
+        // Validasi request
+        if(!req.body) {
+            return res.status(400).send({
+                message: "Konten product tidak boleh kosong!!!!"
+            });
+        }
+
+        // Create skema baru Product
+        const product = new ProductModel({
+            title: req.body.title || "Untitled Product", 
+            description: req.body.description,
+            price: req.body.price
         });
+
+        // Simpan product
+        product.save()
+        .then(response => {
+            res.send(response);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+    }
+}
+
+exports.FindOne = async (req, res) => {
+    const id = req.params.id;
+    // ProductModel.findById(id)
+    // .then(user => {
+    //     res.send(user);
+    // }).catch(err => {
+    //     return res.status(500).send({
+    //         message: "Error mengambil produk dengan id " + id
+    //     });
+    // });
+    const getProduct = await ProductModel.findById(id);
+    res.send(getProduct);
+}
+
+exports.UpdateOne = async (req, res) => {
+    
+    let TokenAuth = req.headers.authorization.split(' ');
+    
+    let resultToken = await JWT.verify(TokenAuth[1], "myTotalySecretKey", function(err, resultToken){
+        if(err)return false;
+        if(resultToken) return resultToken
     });
+
+    if(!resultToken){
+        res.send(403);
+    }else{
+        const id = req.params.id;
+        const getProduct = await ProductModel.findByIdAndUpdate(id, {
+            title: req.body.title,
+            description: req.body.description,
+            price: req.body.price
+        });
+        res.send("Succes update");
+    }
+  
+    // UserModel.findByIdAndUpdate(id,{
+    //     username: req.body.username, 
+    //     password: req.body.password,
+    //     fullname: req.body.fullname,
+    //     email: req.body.email,
+    //     age: req.body.age,
+    //     description: req.body.description,
+    // }).then(user => {
+    //     res.send("Success update");
+    // }).catch(err => {
+    //     res.send(err);
+    // });
 }
 
-exports.FindOne = () => {
-    
-}
 
-exports.UpdateOne = () => {
+exports.Delete = async (req, res) => {
+    let TokenAuth = req.headers.authorization.split(' ');
     
-}
+    let resultToken = await JWT.verify(TokenAuth[1], "myTotalySecretKey", function(err, resultToken){
+        if(err)return false;
+        if(resultToken) return resultToken
+    });
 
-exports.UpdateMany = () => {
-    
-}
-
-exports.Delete = () => {
-    
+    if(!resultToken){
+        res.send(403);
+    }else{
+        const id = req.params.id;
+        const deleteProduct = await ProductModel.deleteOne({"id":id}, (err, obj)=>{
+            res.send("Succes delete");
+        });
+     
+    }
 }
