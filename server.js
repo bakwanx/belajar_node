@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const Routing = require('./routes/routes');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const Cors = require('cors');
 dotenv.config({path:'./config/Config.env'});
 
 // Setting NodeJs Environtment
@@ -15,7 +16,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.json()); //encode dari form json
 app.use(bodyParser.urlencoded({extended:true})); //encode dari form front end atau untuk type data form
 app.use('/', Routing);// setting route
-
+app.use(Cors);
 // MongoDB Connection
 const ConnectMongoDB = require('./models/mongodb/Connections');
 ConnectMongoDB();

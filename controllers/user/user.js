@@ -141,3 +141,43 @@ exports.UpdateOne = () => {
 exports.Delete = () => {
     
 }
+
+exports.LoginPost = async (req, res) => {
+    let dataUser = await UserModel.findOne({ 'username':req.body.username });
+
+    if(!dataUser){
+        res.send({
+            message : "Data not found",
+            statusCode: 400
+        })
+    }else{
+        let password  = cryptr.decrypt(dataUser.password);
+        if( password != req.body.password ){
+            res.send({
+                message : "Password salah",
+                statusCode: 400
+            })
+        }else{
+           
+            let createToken = JWT.sign(
+                {
+                    UID : dataUser._id,
+                    Username : dataUser.username,
+                    Email : dataUser.email 
+                },
+                "myTotalySecretKey",
+                { expiresIn: '1h' }
+            );
+           
+            let userParsing = {
+                Username : dataUser.username,
+                Fullname : dataUser.fullname,
+                Email : dataUser.email,
+                TokenType : 'Bearer',
+                Token : createToken
+            }
+            res.render('login', {logindData : JSON.stringify(userParsing)});
+        }
+       
+    }
+}

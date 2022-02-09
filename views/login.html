@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login APPS Kita</title>
+  
+</head>
+<body>
+ 
+    <div>
+        <label for="">Username</label>
+        <input id="username" type="text" name="username" placeholder="Input username here..">
+    </div>
+
+    <div>
+        <label for="">Password</label>
+        <input id="password" type="text" name="password" placeholder="Input password here..">
+    </div>
+
+    <button onclick="loginButton()">Login</button>
+
+
+
+    <script>
+        function setCookie(name,value,days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days*24*60*60*1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+        }
+        
+        async function loginButton() {
+           
+            let dataPassing = {
+                method: 'POST',
+                headers : {
+                    'Content-Type' : 'application/json'
+                },
+                body: JSON.stringify({
+                    username:document.querySelector('#username').value,
+                    password: document.querySelector('#password').value
+                })
+            }
+            console.log(document.querySelector('#username').value);
+            console.log(document.querySelector('#password').value);
+            let DataLogin = await fetch('http://localhost:7777/api/login', dataPassing)
+                                .then(response=>response.json())
+                                .catch(err => false);
+            console.log(DataLogin.results);
+            if(!DataLogin){
+                //alert("User not found")
+            }else{
+                setCookie("login-data-user",JSON.stringify(DataLogin.results),1);
+            }
+        }
+    </script>
+</body>
+</html>

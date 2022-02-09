@@ -16,6 +16,12 @@ Routes.get('/form', (req,res) =>{
 });
 Routes.post('/form/post', formController.create);
 
+//Login
+Routes.get('/login', (req, res) => {
+    res.render('login');
+});
+Routes.post('/login-post', userController.LoginPost);
+
 // API
 Routes.get('/product-api', productController.findAll);
 Routes.get('/api/product/all', productAPIController.All);

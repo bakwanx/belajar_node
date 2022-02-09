@@ -17,12 +17,12 @@ exports.All = async (req, res) => {
     if(!resultToken){
         res.send(403);
     }else{
-        // cara get data 1
+        // cara get data 2
         const getData = await ProductModel.find();
         res.send(getData);
     }
 
-    // cara get data 2
+    // cara get data 1
     // ProductModel.find().then(response => {
     //     console.log('berhasil');
     //     res.send({
