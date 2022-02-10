@@ -5,6 +5,7 @@ const productController = require('../controllers/product/productview');
 const productAPIController = require('../controllers/product/product');
 const formController = require('../controllers/form/form');
 const userController = require('../controllers/user/user');
+const ImagesControllers = require('../controllers/images/images');
 
 Routes.get('/', productController.mainProduct);
 Routes.get('/products', productController.products);
@@ -29,6 +30,8 @@ Routes.get('/api/product/get/:id', productAPIController.FindOne);
 Routes.post('/api/product/post', productAPIController.Create);
 Routes.put('/api/product/put/:id', productAPIController.UpdateOne);
 Routes.delete('/api/product/delete/:id', productAPIController.Delete);
+Routes.get('/api/product/search', productAPIController.Search);
+Routes.get('/api/product/getByUserData', productAPIController.findDataByUserData);
 
 // API USER
 Routes.get('/api/user/all', userController.All);
@@ -37,4 +40,10 @@ Routes.post('/api/register', userController.Create);
 Routes.put('/api/user/put/:id', userController.UpdateOne);
 Routes.post('/api/login', userController.Login);
 
+//image procession
+Routes.get('/image', (req, res) =>{
+    res.render('imagespost')
+});
+Routes.post('/api/post/image', ImagesControllers.ImagesCreate);
+Routes.get('/api/get/image', ImagesControllers.getImages);
 module.exports = Routes;

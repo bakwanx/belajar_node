@@ -2,6 +2,7 @@ const { response } = require('express');
 const ProductModel = require('../../models/mongodb/product/product');
 const JWT = require('jsonwebtoken');
 const JWTModule = require('../../module/JWTCheck');
+const UserModel = require('../../models/mongodb/user/user');
 
 exports.All = async (req, res) => {
     
@@ -48,7 +49,7 @@ exports.Create = async (req, res) => {
         if(err)return false;
         if(resultToken) return resultToken
     });
-
+  
     if(!resultToken){
         res.send(403);
     }else{
@@ -61,6 +62,8 @@ exports.Create = async (req, res) => {
 
         // Create skema baru Product
         const product = new ProductModel({
+            UID: resultToken.UID,
+            UserOwner: resultToken.Username,
             title: req.body.title || "Untitled Product", 
             description: req.body.description,
             price: req.body.price
@@ -146,3 +149,56 @@ exports.Delete = async (req, res) => {
      
     }
 }
+
+exports.findDataByUserData = async (req, res) => {
+    let Token = await JWTModule.JWTVerify(req.headers);
+    if(!Token) {
+        res.send({
+            message: 'Error',
+            statusCode: 403,
+        })
+    }else{
+        /* relation mongodb */
+        let dataGet = await UserModel.aggregate([
+            {
+                $match:{ 'username':Token.Username}
+            },
+            {
+                $lookup:{
+                    from:'products',
+                    localField: 'username',
+                    foreignField: 'UserOwner',
+                    as: 'data_products'
+                }
+            }
+        ]).exec();
+        console.log(Token.dataGet);
+        if(!dataGet) res.send("Failed to get data");
+        else res.send({
+            message: 'Successfull to get data',
+            statusCode: 200,
+            results: dataGet
+        })
+    }
+   
+}
+
+exports.Search = async (req, res) => {
+
+    //search by character
+    await ProductModel.find({'title':{
+        $regex:req.query.search
+    }}).then(response => {
+        res.send({
+            message:'successfull to get data',
+            statusCode: 200,
+            results:response
+        })
+    }).catch(err =>{
+        res.send({
+            message:'failed to get data',
+            statusCode: 500,
+        })
+    })
+}
+
