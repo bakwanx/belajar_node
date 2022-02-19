@@ -6,6 +6,7 @@ const productAPIController = require('../controllers/product/product');
 const formController = require('../controllers/form/form');
 const userController = require('../controllers/user/user');
 const ImagesControllers = require('../controllers/images/images');
+const productMysqlController = require('../controllers/product_mysql/product');
 
 Routes.get('/', productController.mainProduct);
 Routes.get('/products', productController.products);
@@ -45,5 +46,9 @@ Routes.get('/image', (req, res) =>{
     res.render('imagespost')
 });
 Routes.post('/api/post/image', ImagesControllers.ImagesCreate);
-Routes.get('/api/get/image', ImagesControllers.getImages);
+Routes.get('/api/get/image/:filename', ImagesControllers.getImages);
+
+
+//API MYSQL
+Routes.post('/api/mysql/create', productMysqlController.create);
 module.exports = Routes;

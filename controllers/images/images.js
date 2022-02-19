@@ -1,17 +1,18 @@
-const randomString =  require('../../module/RandomString');
+const RandomString =  require('../../module/RandomString').RandomString;
 const Path = require('path');
 
 
 exports.ImagesCreate = (req, res) =>{
     let ImagesData = req.files.imagesData;
    
-    let newName = randomString.RandomString(25) + ImagesData.mimetype.replace('image/', '.');
+    let newName = RandomString(25) + ImagesData.mimetype.replace('image/', '.')
     let dirName  =  Path.join(__dirname, '../../public');
     console.log(dirName);
-    ImagesData.mv(dirName + '/images/', newName, function(err, result){
-        if(err) return false;
-        if(result) return true;
+    ImagesData.mv(dirName + '/images/' + newName, function(err, result){
+        if(err) console.log(err);
+        if(result) console.log("Success");
     });
+
 }
 
 exports.getImages = (req, res) =>{

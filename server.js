@@ -12,13 +12,12 @@ dotenv.config({path:'./config/Config.env'});
 
 // Setting NodeJs Environtment
 app.use(fileUpload());
+app.use(Cors());
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname+'/public'));
 app.use(morgan('dev'));
 app.use(bodyParser.json()); //encode dari form json
 app.use(bodyParser.urlencoded({extended:true})); //encode dari form front end atau untuk type data form
-app.use('/', Routing);// setting route
-app.use(Cors());
 
 // MongoDB Connection
 const ConnectMongoDB = require('./models/mongodb/Connections');
@@ -29,6 +28,7 @@ app.listen(PORT, function(){
     console.log(`Server Nyalaaaa !`);
 });
 
+app.use('/', Routing);// setting route
 // Rest API
 // app.get('/get/api', (req, res) => {
 //     res.json({

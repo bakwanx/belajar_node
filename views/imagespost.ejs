@@ -15,23 +15,20 @@
             <button type="button" id="submit-btn">Submit</button>
         </div>
     </section>
-</body>
-    <script>
-        document.getElementById('submit-btn')
-        .addEventListener('click', async function(e){
-            let ImagesData = document.querySelector('#imageData').files;
-          
 
-            let formData = new FormData();
-            formData.append('imagesData', ImagesData[0]);
-          
-            let config = {
-                method:"post",
-                body:formData
-            }
-            
-            await fetch('/api/post/image', config);
-        });
-    
-    </script>
+<script>
+    document.getElementById("submit-btn")
+    .addEventListener('click', async function(e) {
+        console.log('halo');
+        let ImagesData = document.querySelector("#imageData").files
+        let formData = new FormData()
+        formData.append('imagesData', ImagesData[0])
+        let config = {
+            method: 'post',
+            body: formData
+        }
+        await fetch('/api/post/image', config)
+    })
+</script>
+</body>
 </html>
